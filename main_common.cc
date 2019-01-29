@@ -221,7 +221,7 @@ bool write_file_header( FILE * const f, const char * const filetype )
 
   if( timestamp.empty() ) timestamp = get_timestamp( initial_time() );
   return ( std::fprintf( f, "# %s. Created by %s version %s\n"
-                            "# Command line: %s\n"
+                            "# Parameters: %s\n"
                             "# Start time:   %s\n",
            filetype, Program_name, PROGVERSION, command_line.c_str(),
            timestamp.c_str() ) >= 0 );

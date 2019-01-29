@@ -549,9 +549,7 @@ int main( const int argc, const char * const argv[] )
   Sblock::Status type1 = Sblock::finished, type2 = Sblock::bad_sector;
   Sblock::Status complete_type = Sblock::non_tried;
   invocation_name = argv[0];
-  command_line = argv[0];
-  for( int i = 1; i < argc; ++i )
-    { command_line += ' '; command_line += argv[i]; }
+  command_line = program_name;
 
   enum Optcode { opt_shi = 256 };
   const Arg_parser::Option options[] =
@@ -606,6 +604,22 @@ int main( const int argc, const char * const argv[] )
     if( !code ) break;					// no more options
     const std::string & arg = parser.argument( argind );
     const char * const ptr = arg.c_str();
+
+    command_line += " -";
+    if (code < 256)
+      command_line += code;
+    else
+      {
+      int i;
+      for (i = 0; options[i].code != code; i++)
+          ;
+      command_line += "-";
+      command_line += options[i].name;
+      }
+
+    if (*ptr)
+      command_line += " " + arg;
+
     switch( code )
       {
       case 'a': set_mode( program_mode, m_change );

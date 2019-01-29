@@ -740,9 +740,7 @@ int main( const int argc, const char * const argv[] )
   bool synchronous = false;
   bool verify_input_size = false;
   invocation_name = argv[0];
-  command_line = argv[0];
-  for( int i = 1; i < argc; ++i )
-    { command_line += ' '; command_line += argv[i]; }
+  command_line = program_name;
 
   enum { opt_ask = 256, opt_cm, opt_cpa, opt_ds, opt_eoe, opt_eve, opt_mi,
          opt_msr, opt_poe, opt_pop, opt_rat, opt_rea, opt_rs, opt_sf };
@@ -822,6 +820,22 @@ int main( const int argc, const char * const argv[] )
     if( !code ) break;					// no more options
     const std::string & sarg = parser.argument( argind );
     const char * const arg = sarg.c_str();
+
+    command_line += " -";
+    if (code < 256)
+      command_line += code;
+    else
+      {
+      int i;
+      for (i = 0; options[i].code != code; i++)
+          ;
+      command_line += "-";
+      command_line += options[i].name;
+      }
+
+    if (*arg)
+      command_line += " " + sarg;
+
     switch( code )
       {
       case 'a': rb_opts.min_read_rate = getnum( arg, hardbs, 0 ); break;
