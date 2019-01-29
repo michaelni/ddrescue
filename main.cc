@@ -125,6 +125,8 @@ void show_help( const int cluster, const int hardbs )
                "      --command-mode             execute commands from standard input\n"
                "      --cpass=<n>[,<n>]          select what copying pass(es) to run\n"
                "      --delay-slow=<interval>    initial delay before checking slow reads [30]\n"
+               "      --height                   ascii art height [8]\n"
+               "      --width                    ascii art width [80]\n"
                "      --log-events=<file>        log significant events in <file>\n"
                "      --log-rates=<file>         log rates and error sizes in <file>\n"
                "      --log-reads=<file>         log all read operations in <file>\n"
@@ -743,7 +745,8 @@ int main( const int argc, const char * const argv[] )
   command_line = program_name;
 
   enum { opt_ask = 256, opt_cm, opt_cpa, opt_ds, opt_eoe, opt_eve, opt_mi,
-         opt_msr, opt_poe, opt_pop, opt_rat, opt_rea, opt_rs, opt_sf };
+         opt_msr, opt_poe, opt_pop, opt_rat, opt_rea, opt_rs, opt_sf,
+         opt_wdt, opt_hgt };
   const Arg_parser::Option options[] =
     {
     { 'a', "min-read-rate",        Arg_parser::yes },
@@ -807,6 +810,8 @@ int main( const int argc, const char * const argv[] )
     { opt_rea, "log-reads",        Arg_parser::yes },
     { opt_rs,  "reset-slow",       Arg_parser::no  },
     { opt_sf,  "same-file",        Arg_parser::no  },
+    { opt_wdt, "width",            Arg_parser::yes },
+    { opt_hgt, "height",           Arg_parser::yes },
     {  0 , 0,                      Arg_parser::no  } };
 
   const Arg_parser parser( argc, argv, options );
@@ -894,6 +899,8 @@ int main( const int argc, const char * const argv[] )
       case opt_eve: if( event_logger.set_filename( arg ) ) break;
             show_error( "Events logfile exists and is not a regular file." );
             return 1;
+      case opt_wdt: rb_opts.visualization_width  = getnum( arg, 0, 0, 100); break;
+      case opt_hgt: rb_opts.visualization_height = getnum( arg, 0, 0, 100); break;
       case opt_mi:  parse_mapfile_intervals( arg, mb_opts ); break;
       case opt_msr: rb_opts.max_slow_reads = getnum( arg, 0, 0, LONG_MAX );
                     break;

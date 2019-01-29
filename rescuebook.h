@@ -65,6 +65,8 @@ struct Rb_options
   int pause_on_pass;
   int preview_lines;		// preview lines to show. 0 = disable
   int timeout;
+  int visualization_height;
+  int visualization_width;
   bool complete_only;
   bool new_bad_areas_only;
   bool noscrape;
@@ -87,7 +89,8 @@ struct Rb_options
       max_read_errors( ULONG_MAX ), max_slow_reads( ULONG_MAX ),
       cpass_bitset( 31 ), delay_slow( 30 ), max_retries( 0 ), o_direct_in( 0 ),
       pause_on_error( 0 ), pause_on_pass( 0 ), preview_lines( 0 ),
-      timeout( -1 ), complete_only( false ), new_bad_areas_only( false ),
+      timeout( -1 ), visualization_height(8), visualization_width(80),
+      complete_only( false ), new_bad_areas_only( false ),
       noscrape( false ), notrim( false ), reopen_on_error( false ),
       reset_slow( false ), retrim( false ), reverse( false ),
       same_file( false ), simulated_poe( false ), sparse( false ),

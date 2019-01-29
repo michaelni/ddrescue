@@ -743,6 +743,61 @@ void Rescuebook::show_status( const long long ipos, const char * const msg,
           }
         std::fputc( '\n', stdout );
         }
+      static int first = 1;
+      if( visualization_width && visualization_height)
+        {
+        int opos = last_ipos + offset();
+        int cell_count= visualization_width*visualization_height;
+        int64_t block_count=sblock(sblocks()-1).end() / hardbs();
+
+        cell_count= block_count / ((block_count + cell_count - 1) / cell_count);
+
+        if(!first)
+          for(int i=0; i<cell_count; i+= visualization_width)
+            std::fputs( up, stdout );
+
+        int j=0;
+        for(int i=0; i<cell_count; i++)
+          {
+          int64_t start=  i   *hardbs()*block_count / cell_count;
+          int64_t end  = (i+1)*hardbs()*block_count / cell_count;
+          int non_tried=0;
+          int bad=0;
+          int ok=0;
+          for(; j<sblocks() && sblock(j).end() <= start; j++);
+          for(; j<sblocks() && sblock(j).pos() < end; j++)
+            {
+            const Sblock & sb = sblock(j);
+            int size= (std::min(end, (int64_t)sb.end()) - std::max(start, (int64_t)sb.pos()) ) / hardbs();
+            switch( sb.status() )
+              {
+              case Sblock::non_scraped:
+              case Sblock::non_tried  : non_tried+= size; break;
+              case Sblock::non_trimmed:
+              case Sblock::bad_sector : bad      += size; break;
+              case Sblock::finished   : ok       += size; break;
+              }
+            }
+          j--;
+
+          if(opos*(int64_t)cell_count / (hardbs()*block_count) == i)
+            std::printf("\x1b[05;04m");
+
+          if(non_tried)         std::printf("?");
+          else if( !bad &&  ok) std::printf(" ");
+          else if(  bad && !ok) std::printf("\x1b[01;31mX");
+          else if( !bad && !ok) std::printf("!");
+          else if(  bad > 3*ok) std::printf("\x1b[31mx");
+          else if(  bad >   ok) std::printf("\x1b[01;33m+");
+          else if(3*bad >   ok) std::printf("\x1b[33m-");
+          else                  std::printf("\x1b[32m.");
+          std::printf("\x1b[00m");
+
+          if(i%visualization_width == visualization_width - 1 || i+1 == cell_count)
+              std::printf("\n");
+          }
+        }
+      first = 0;
       std::printf( "     ipos: %9sB, non-trimmed: %9sB,  current rate: %8sB/s\n",
                    format_num( last_ipos ), format_num( non_trimmed_size ),
                    format_num( c_rate, 99999 ) );
